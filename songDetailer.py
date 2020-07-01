@@ -49,7 +49,7 @@ def findSongs(path, listbox):
     duration = 0
     for i in list:
         if ".mp3" in i:
-            audiofile = MP3(path + "\\" + i)
+            audiofile = MP3(path + '/' + i)
             duration = audiofile.info.length
             strtime = convert(duration)
             #print(i)
