@@ -7,9 +7,13 @@ from tkinter import Listbox
 from tkinter import filedialog
 from tkinter import Scrollbar
 from tkinter import Frame
+import vlc
 
 after_id=None
 songs=[]
+player= None
+audiofile=None
+path = ""
 #path = r"C:\Users\Matt\Music"
 
 border_effects = {
@@ -26,7 +30,9 @@ def open_file(window, entry, listbox):
     if(len(tempdir)>0):
         entry.config(text=tempdir, width=len(tempdir)+5)
         entry.pack()
-        findSongs(entry.cget('text'), listbox)
+        global path
+        path = entry.cget('text')
+        findSongs(path, listbox)
         #entry.pack(side=tk.LEFT, fill=tk.Y)
     else:
         messagebox.showinfo("Error", "No File Selected")
@@ -75,7 +81,19 @@ def countdowner(song, songlabel, currsong, window):
             duration=songs[i][1]
             title=songs[i][0]
     currsong.config(text=title)
+
+    global player
+    player = vlc.MediaPlayer(path+ '/' + title)
+    player.play()
+    changeTitle(title[0:len(title)-4])
     changeTime(song,window,duration,songlabel)
+
+def changeTitle(song):
+    f = open("currentSongTitle.txt", "w+")
+    f.truncate(0)
+    f.seek(0)
+    f.write(song)
+
 
 def changeTime(song,window,duration,songlabel):
     f = open("currentSongDuration.txt", "w+")
@@ -96,6 +114,8 @@ def stopTimer(window):
     if after_id:
         window.after_cancel(after_id)
         after_id = None
+        global player
+        player.stop()
 
 if __name__ == '__main__':
     window = tk.Tk()
